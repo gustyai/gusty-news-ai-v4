@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0759d8" />
+  <title>Gusty News AI™ V4</title>
+  <style>
+    :root{--blue:#0759d8;--blue2:#003e9f;--ink:#10243f;--muted:#63748a;--bg:#edf4ff;--card:#fff;--line:#c8d5e6;--ok:#0aa77a;--warn:#e58a00;--danger:#d33b3b;--shadow:0 12px 34px rgba(22,60,115,.12)}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#e9f2ff,#f7faff);color:var(--ink)}
+    button,input,textarea,select{font:inherit} button{cursor:pointer}
+    .wrap{max-width:980px;margin:auto;padding:18px 16px 42px}
+    .hero{background:linear-gradient(135deg,var(--blue2),#0879ff);color:#fff;border-radius:28px;padding:28px 24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .hero:after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.10);right:-55px;top:-70px}
+    .hero h1{margin:0;font-size:clamp(34px,7vw,62px);line-height:1}.hero p{margin:14px 0 0;font-size:18px}.topline{display:flex;align-items:center;justify-content:space-between;gap:10px}.badge{background:rgba(255,255,255,.16);padding:8px 12px;border-radius:999px;font-weight:800;font-size:13px}
+    .grid{display:grid;grid-template-columns:1fr;gap:18px;margin-top:18px}@media(min-width:820px){.grid{grid-template-columns:1.05fr .95fr}}
+    .card{background:var(--card);border-radius:24px;padding:20px;box-shadow:var(--shadow);border:1px solid rgba(170,191,220,.5)}
+    h2{font-size:30px;margin:0 0 18px} h3{margin:0 0 12px}
+    label{display:block;font-weight:850;font-size:16px;margin:15px 0 7px}
+    input,textarea,select{width:100%;border:2px solid var(--line);border-radius:16px;padding:14px 15px;background:#fff;color:var(--ink);outline:none}textarea{min-height:145px;resize:vertical}input:focus,textarea:focus,select:focus{border-color:#4f91ef;box-shadow:0 0 0 4px rgba(7,89,216,.09)}
+    .row{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:560px){.row.two{grid-template-columns:1fr 1fr}}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.btn{border:0;border-radius:999px;padding:13px 18px;font-weight:900}.primary{background:var(--blue);color:#fff}.secondary{background:#e5efff;color:#064aab}.ghost{background:#f3f6fa;color:var(--ink);border:1px solid var(--line)}.danger{background:#fff0f0;color:var(--danger)}
+    .result{white-space:pre-wrap;background:#f7faff;border:2px dashed #b7c8dc;border-radius:18px;min-height:360px;padding:18px;font-size:18px;line-height:1.55;overflow-wrap:anywhere}
+    .statusbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}.status{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 12px;font-weight:800;font-size:13px;background:#eef3f8}.dot{width:10px;height:10px;border-radius:50%;background:var(--warn)}.connected .dot{background:var(--ok)}
+    .tabs{display:flex;gap:8px;overflow:auto;padding-bottom:4px;margin-bottom:14px}.tab{white-space:nowrap;border:0;padding:10px 14px;border-radius:999px;background:#edf2f8;font-weight:850}.tab.active{background:var(--blue);color:#fff}
+    .history{display:grid;gap:10px}.item{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fbfdff}.item-head{display:flex;justify-content:space-between;gap:10px}.item-title{font-weight:900}.item-meta{font-size:12px;color:var(--muted);margin-top:4px}.item-actions{display:flex;gap:6px;margin-top:10px}.mini{border:0;border-radius:999px;padding:8px 11px;font-weight:800;background:#eaf1fc;color:#174a90}
+    .empty{color:var(--muted);text-align:center;padding:24px}.note{font-size:13px;color:var(--muted);line-height:1.45}.footer{text-align:center;color:var(--muted);padding:26px 0 8px}
+    dialog{border:0;border-radius:24px;padding:0;max-width:620px;width:calc(100% - 24px);box-shadow:0 24px 80px rgba(0,0,0,.28)}dialog::backdrop{background:rgba(7,25,54,.58)}.modal{padding:22px}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.x{border:0;background:#edf2f7;border-radius:50%;width:42px;height:42px;font-size:22px}
+    .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(30px);opacity:0;background:#10243f;color:#fff;padding:12px 18px;border-radius:999px;font-weight:850;transition:.22s;z-index:99;max-width:90%;text-align:center}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .counter{text-align:right;color:var(--muted);font-size:12px;margin-top:5px}.hidden{display:none!important}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="topline"><span class="badge">Gusty™ Approved™</span><button class="btn ghost" id="openSettings" type="button">⚙️ Supabase</button></div>
+      <h1>Gusty News AI™</h1>
+      <p>V4 · Publicaciones multired, prompts visuales e historial en Supabase.</p>
+      <div class="statusbar"><span id="cloudStatus" class="status"><span class="dot"></span><span>Modo local</span></span><span class="badge">Móvil primero</span></div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Crear publicación</h2>
+        <label for="topic">Tema</label>
+        <input id="topic" maxlength="180" placeholder="Ej.: Japón presenta una nueva tecnología contra el calor" />
+        <div class="counter"><span id="topicCount">0</span>/180</div>
+
+        <label for="facts">Datos principales</label>
+        <textarea id="facts" maxlength="1500" placeholder="Lugar, fecha, cifras, contexto y fuente..."></textarea>
+        <div class="counter"><span id="factsCount">0</span>/1500</div>
+
+        <div class="row two">
+          <div><label for="edition">Edición</label><select id="edition">
+            <option>Japón</option><option>IA y Tecnología</option><option>China y Asia</option><option>Perú</option><option>Negocios y Startups</option><option>Marketing Viral</option><option>Economía y Mercados</option><option>Deportes</option><option>Salud</option><option>Medioambiente</option><option>Curiosidades</option>
+          </select></div>
+          <div><label for="tone">Tono</label><select id="tone"><option value="news">Periodístico</option><option value="viral">Viral y directo</option><option value="premium">Sobrio y premium</option><option value="debate">Polémica y debate</option><option value="human">Humano y emocional</option></select></div>
+        </div>
+
+        <label for="format">Formato</label>
+        <select id="format">
+          <optgroup label="Instagram"><option value="instagram-feed">Instagram Feed</option><option value="instagram-reel">Instagram Reel</option><option value="instagram-story">Instagram Story</option><option value="instagram-carousel">Instagram Carrusel</option></optgroup>
+          <optgroup label="Otras redes"><option value="facebook">Facebook</option><option value="telegram">Telegram</option><option value="linkedin">LinkedIn</option><option value="x">X / Twitter</option><option value="tiktok">TikTok / Shorts</option></optgroup>
+        </select>
+
+        <div class="actions"><button class="btn primary" id="generate">Generar publicación</button><button class="btn secondary" id="clear">Limpiar</button></div>
+      </article>
+
+      <article class="card">
+        <h2>Resultado</h2>
+        <div id="result" class="result">Tu publicación aparecerá aquí.</div>
+        <div class="actions"><button class="btn primary" id="copy">Copiar texto</button><button class="btn secondary" id="imagePrompt">Prompt para imagen</button><button class="btn ghost" id="save">Guardar</button></div>
+        <p class="note">La redacción funciona localmente. Supabase guarda y sincroniza el historial cuando lo conectas.</p>
+      </article>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <div class="topline"><h2 style="margin:0">Historial</h2><div class="actions" style="margin:0"><button class="btn ghost" id="refreshHistory">Actualizar</button><button class="btn danger" id="clearLocal">Vaciar local</button></div></div>
+      <div class="tabs"><button class="tab active" data-filter="all">Todo</button><button class="tab" data-filter="instagram">Instagram</button><button class="tab" data-filter="other">Otras redes</button></div>
+      <div id="history" class="history"><div class="empty">Todavía no hay publicaciones guardadas.</div></div>
+    </section>
+
+    <footer class="footer">Gusty News AI™ · V4 · Vercel + Supabase</footer>
+  </main>
+
+  <dialog id="settingsDialog"><div class="modal">
+    <div class="modal-head"><div><h2 style="margin:0">Conectar Supabase</h2><p class="note">La URL y la clave pública se guardan solo en este navegador.</p></div><button class="x" id="closeSettings">×</button></div>
+    <label for="sbUrl">Project URL</label><input id="sbUrl" placeholder="https://xxxxxxxx.supabase.co" autocomplete="off" />
+    <label for="sbKey">Publishable / anon key</label><textarea id="sbKey" style="min-height:110px" placeholder="eyJhbGciOi..."></textarea>
+    <div class="actions"><button class="btn primary" id="connectSb">Conectar y probar</button><button class="btn secondary" id="saveSb">Guardar sin probar</button><button class="btn danger" id="disconnectSb">Desconectar</button></div>
+    <p class="note"><strong>Antes:</strong> ejecuta el archivo <code>supabase.sql</code> en el SQL Editor y habilita Anonymous Sign-Ins en Supabase Auth. No uses la clave <em>service_role</em> en esta web.</p>
+  </div></dialog>
+  <div id="toast" class="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+    const els={topic:$('#topic'),facts:$('#facts'),edition:$('#edition'),tone:$('#tone'),format:$('#format'),result:$('#result'),history:$('#history'),status:$('#cloudStatus')};
+    let sb=null, currentText='', historyFilter='all';
+    const storeKey='gusty_v4_history', configKey='gusty_v4_supabase';
+
+    function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+    function esc(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+    function clean(v){return v.trim().replace(/\s+/g,' ')}
+    function hashtags(edition,format){const map={
+      'Japón':['#Japón','#Innovación','#Tecnología'],'IA y Tecnología':['#InteligenciaArtificial','#Tecnología','#Innovación'],'China y Asia':['#China','#Asia','#Innovación'],'Perú':['#Perú','#Actualidad','#Noticias'],'Negocios y Startups':['#Negocios','#Startups','#Innovación'],'Marketing Viral':['#Marketing','#Contenido','#Tendencias'],'Economía y Mercados':['#Economía','#Mercados','#Negocios'],'Deportes':['#Deportes','#Actualidad','#Pasión'],'Salud':['#Salud','#Bienestar','#Prevención'],'Medioambiente':['#Medioambiente','#Sostenibilidad','#Planeta'],'Curiosidades':['#Curiosidades','#Viral','#Mundo']};
+      let h=map[edition]||['#Noticias','#Actualidad']; if(format==='linkedin') return h.slice(0,4).join(' '); if(format==='tiktok'||format==='instagram-story') return ''; return h.slice(0,5).join(' ')
+    }
+    function hook(topic,tone){const hooks={news:`📰 ${topic}`,viral:`🚨 Esto está dando que hablar: ${topic}`,premium:`Una historia que merece atención: ${topic}`,debate:`¿Avance necesario o medida exagerada? ${topic}`,human:`Detrás de esta noticia hay una historia humana: ${topic}`};return hooks[tone]}
+    function cta(tone){return tone==='debate'?'¿Estás de acuerdo o en desacuerdo? Te leo.':tone==='viral'?'¿Lo compartirías? Comenta qué opinas.':tone==='premium'?'¿Qué lectura haces de esta noticia?':'¿Qué opinas? Te leo.'}
+    function generateText(){
+      const topic=clean(els.topic.value), facts=els.facts.value.trim(), edition=els.edition.value, tone=els.tone.value, f=els.format.value;
+      if(!topic||!facts){toast('Completa el tema y los datos principales');return}
+      const h=hashtags(edition,f), lead=hook(topic,tone), question=cta(tone); let out='';
+      const brand=`— Gusty™\nGusty™ Approved™`;
+      if(f==='instagram-feed') out=`🗞️ GUSTY NEWS™ | EDICIÓN ${edition.toUpperCase()}\n\n${lead}\n\n${facts}\n\n${question}\n\n${h}\n\n${brand}`;
+      if(f==='instagram-reel') out=`🎬 GUION PARA REEL — GUSTY NEWS™\n\nGANCHO (0–3 s):\n“${topic}. Y esto podría cambiar más de lo que parece.”\n\nDESARROLLO (4–22 s):\n${facts}\n\nCIERRE (23–30 s):\n${question}\n\nTEXTO EN PANTALLA:\n${topic}\n\nCOPY:\n${lead}\n${question}\n${h}\n\n${brand}`;
+      if(f==='instagram-story') out=`📱 STORY 1\n${topic}\n\n📱 STORY 2\n${facts}\n\n📱 STORY 3\n${question}\n\nEncuesta: SÍ / NO\n\n${brand}`;
+      if(f==='instagram-carousel') out=`📚 CARRUSEL INSTAGRAM — ${edition}\n\nDIAPOSITIVA 1 — PORTADA\n${topic}\n\nDIAPOSITIVA 2 — QUÉ PASÓ\n${facts}\n\nDIAPOSITIVA 3 — POR QUÉ IMPORTA\nImpacta en la vida diaria, la conversación pública y las decisiones futuras relacionadas con ${edition.toLowerCase()}.\n\nDIAPOSITIVA 4 — LA PREGUNTA\n${question}\n\nDIAPOSITIVA 5 — CIERRE\nGuarda y comparte este carrusel.\n\nCOPY:\n${lead}\n${facts}\n${question}\n${h}\n\n${brand}`;
+      if(f==='facebook') out=`🗞️ GUSTY NEWS™\nEdición: ${edition}\n\n${lead}\n\n${facts}\n\n${question}\n\n${h}\n\n${brand}`;
+      if(f==='telegram') out=`🗞️ GUSTY NEWS™\n📍 Edición: ${edition}\n\n${lead}\n\n${facts}\n\n💬 ${question}\n\n${brand}`;
+      if(f==='linkedin') out=`${topic}\n\n${facts}\n\nEsta noticia abre una conversación importante sobre ${edition.toLowerCase()}: cómo convertir una novedad en aprendizaje, oportunidad y mejores decisiones.\n\n${question}\n\n${h}\n\n${brand}`;
+      if(f==='x'){const base=`${topic}\n\n${facts}\n\n${question}`;out=(base.length>255?`${topic}\n\n${facts.slice(0,150)}…\n\n${question}`:base)+`\n\n${h}`}
+      if(f==='tiktok') out=`🎥 GUION TIKTOK / SHORTS\n\nGANCHO:\n“Detente: ${topic}.”\n\nVOZ EN OFF:\n${facts}\n\nCIERRE:\n${question}\n\nTEXTO DE PORTADA:\n${topic}\n\n${brand}`;
+      currentText=out;els.result.textContent=out;els.result.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+    function createImagePrompt(){const topic=clean(els.topic.value),facts=clean(els.facts.value),edition=els.edition.value;if(!topic){toast('Primero escribe el tema');return} currentText=`PROMPT VISUAL GUSTY NEWS™\n\nCrear una portada informativa vertical 9:16 (1080x1920), estilo periódico contemporáneo premium, sobrio, elegante y disruptivo. Tema central: “${topic}”. Contexto visual: ${facts||'representar el tema con claridad'}. Edición: ${edition}. Usar composición cinematográfica, jerarquía editorial clara, alto contraste, espacio limpio, texto corto y perfectamente legible en español. Paleta azul Gusty con acentos moderados. Incluir discretamente la marca “Gusty™”. No usar logotipos de terceros, no inventar cifras, no saturar de texto.`;els.result.textContent=currentText;toast('Prompt visual creado')}
+    async function copyText(text=currentText){if(!text||text==='Tu publicación aparecerá aquí.'){toast('No hay texto para copiar');return}try{await navigator.clipboard.writeText(text);toast('Texto copiado')}catch{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Texto copiado')}}
+    function localHistory(){try{return JSON.parse(localStorage.getItem(storeKey)||'[]')}catch{return []}}
+    function setLocalHistory(v){localStorage.setItem(storeKey,JSON.stringify(v.slice(0,80)))}
+    function payload(){return{topic:clean(els.topic.value),facts:els.facts.value.trim(),edition:els.edition.value,tone:els.tone.value,format:els.format.value,content:currentText,created_at:new Date().toISOString()}}
+    async function savePublication(){if(!currentText){toast('Primero genera una publicación');return}const p=payload();let h=localHistory();h.unshift({...p,id:'local-'+Date.now(),source:'local'});setLocalHistory(h);if(sb){try{const {data:{user}}=await sb.auth.getUser();const {error}=await sb.from('publications').insert({...p,user_id:user.id});if(error)throw error;toast('Guardado en Supabase y local')}catch(e){console.error(e);toast('Guardado local; Supabase falló')}}else toast('Guardado local');renderHistory()}
+    async function getCloudHistory(){if(!sb)return[];try{const {data,error}=await sb.from('publications').select('*').order('created_at',{ascending:false}).limit(80);if(error)throw error;return(data||[]).map(x=>({...x,source:'cloud'}))}catch(e){console.error(e);toast('No se pudo leer Supabase');return[]}}
+    function filterItems(items){return items.filter(x=>historyFilter==='all'||(historyFilter==='instagram'?x.format.startsWith('instagram'):!x.format.startsWith('instagram')))}
+    async function renderHistory(){const local=localHistory(),cloud=await getCloudHistory();const seen=new Set();const all=[...cloud,...local].filter(x=>{const k=x.content+'|'+x.created_at.slice(0,16);if(seen.has(k))return false;seen.add(k);return true});const items=filterItems(all);if(!items.length){els.history.innerHTML='<div class="empty">Todavía no hay publicaciones guardadas.</div>';return}els.history.innerHTML=items.map((x,i)=>`<div class="item"><div class="item-head"><div><div class="item-title">${esc(x.topic||'Publicación')}</div><div class="item-meta">${esc(x.format)} · ${esc(x.edition)} · ${new Date(x.created_at).toLocaleString('es-419')} · ${x.source==='cloud'?'☁️ Supabase':'📱 Local'}</div></div></div><div class="item-actions"><button class="mini" data-open="${i}">Abrir</button><button class="mini" data-copy="${i}">Copiar</button>${x.source==='cloud'?`<button class="mini" data-delete="${esc(x.id)}">Eliminar nube</button>`:''}</div></div>`).join('');window.__items=items}
+    async function deleteCloud(id){if(!sb)return;const {error}=await sb.from('publications').delete().eq('id',id);if(error)toast('No se pudo eliminar');else{toast('Eliminado');renderHistory()}}
+    function setCloudState(ok,label){els.status.classList.toggle('connected',ok);els.status.querySelector('span:last-child').textContent=label}
+    function config(){try{return JSON.parse(localStorage.getItem(configKey)||'null')}catch{return null}}
+    function initClient(conf){if(!conf?.url||!conf?.key||!window.supabase)return null;return window.supabase.createClient(conf.url,conf.key)}
+    async function connectSupabase(test=true){const conf={url:$('#sbUrl').value.trim(),key:$('#sbKey').value.trim()};if(!conf.url||!conf.key){toast('Falta URL o clave pública');return}localStorage.setItem(configKey,JSON.stringify(conf));sb=initClient(conf);if(!test){setCloudState(false,'Configuración guardada');toast('Configuración guardada');return}try{let {data:{session}}=await sb.auth.getSession();if(!session){const {error}=await sb.auth.signInAnonymously();if(error)throw error}const {error}=await sb.from('publications').select('id').limit(1);if(error)throw error;setCloudState(true,'Supabase conectado');$('#settingsDialog').close();toast('Supabase conectado');renderHistory()}catch(e){console.error(e);setCloudState(false,'Supabase sin conectar');toast('Revisa SQL y Anonymous Sign-Ins')}}
+    async function boot(){const c=config();if(c){$('#sbUrl').value=c.url||'';$('#sbKey').value=c.key||'';sb=initClient(c);if(sb){try{let {data:{session}}=await sb.auth.getSession();if(!session){const r=await sb.auth.signInAnonymously();if(r.error)throw r.error}setCloudState(true,'Supabase conectado')}catch{setCloudState(false,'Modo local')}}}renderHistory()}
+
+    $('#generate').onclick=generateText;$('#clear').onclick=()=>{els.topic.value='';els.facts.value='';currentText='';els.result.textContent='Tu publicación aparecerá aquí.';$('#topicCount').textContent='0';$('#factsCount').textContent='0'};$('#copy').onclick=()=>copyText();$('#imagePrompt').onclick=createImagePrompt;$('#save').onclick=savePublication;$('#refreshHistory').onclick=renderHistory;$('#clearLocal').onclick=()=>{if(confirm('¿Vaciar el historial local de este teléfono?')){localStorage.removeItem(storeKey);renderHistory();toast('Historial local eliminado')}};
+    $('#openSettings').onclick=()=>$('#settingsDialog').showModal();$('#closeSettings').onclick=()=>$('#settingsDialog').close();$('#connectSb').onclick=()=>connectSupabase(true);$('#saveSb').onclick=()=>connectSupabase(false);$('#disconnectSb').onclick=()=>{localStorage.removeItem(configKey);sb=null;$('#sbUrl').value='';$('#sbKey').value='';setCloudState(false,'Modo local');toast('Supabase desconectado');renderHistory()};
+    els.topic.oninput=()=>$('#topicCount').textContent=els.topic.value.length;els.facts.oninput=()=>$('#factsCount').textContent=els.facts.value.length;
+    $$('.tab').forEach(t=>t.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');historyFilter=t.dataset.filter;renderHistory()});
+    els.history.onclick=e=>{const o=e.target.dataset.open,c=e.target.dataset.copy,d=e.target.dataset.delete;if(o!==undefined){const x=window.__items[+o];currentText=x.content;els.result.textContent=x.content;els.topic.value=x.topic||'';els.facts.value=x.facts||'';els.edition.value=x.edition||els.edition.value;els.tone.value=x.tone||els.tone.value;els.format.value=x.format||els.format.value;scrollTo({top:0,behavior:'smooth'})}if(c!==undefined)copyText(window.__items[+c].content);if(d)deleteCloud(d)};
+    boot();
+  </script>
+</body>
+</html>
