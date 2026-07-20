@@ -108,6 +108,85 @@
     }
     function hook(topic,tone){const hooks={news:`📰 ${topic}`,viral:`🚨 Esto está dando que hablar: ${topic}`,premium:`Una historia que merece atención: ${topic}`,debate:`¿Avance necesario o medida exagerada? ${topic}`,human:`Detrás de esta noticia hay una historia humana: ${topic}`};return hooks[tone]}
     function cta(tone){return tone==='debate'?'¿Estás de acuerdo o en desacuerdo? Te leo.':tone==='viral'?'¿Lo compartirías? Comenta qué opinas.':tone==='premium'?'¿Qué lectura haces de esta noticia?':'¿Qué opinas? Te leo.'}
+    async function generateWithAI(){
+  const topic=clean(els.topic.value);
+  const facts=els.facts.value.trim();
+  const edition=els.edition.value;
+  const tone=els.tone.value;
+  const format=els.format.value;
+  const button=$('#generate');
+
+  if(!topic||!facts){
+    toast('Completa el tema y los datos principales');
+    return;
+  }
+
+  const prompt=`
+Eres el redactor oficial de Gusty News™.
+
+Crea una publicación completamente original en español.
+
+Tema:
+${topic}
+
+Datos principales:
+${facts}
+
+Edición:
+${edition}
+
+Tono:
+${tone}
+
+Formato:
+${format}
+
+Instrucciones:
+- No repitas simplemente los datos recibidos.
+- Redacta con naturalidad, claridad y fuerza.
+- Usa una estructura adecuada para la red social seleccionada.
+- No inventes cifras, nombres ni hechos.
+- Incluye una pregunta final para generar conversación.
+- Incluye la firma:
+— Gusty™
+Gusty™ Approved™
+`;
+
+  button.disabled=true;
+  button.textContent='Generando con IA...';
+  els.result.textContent='Gusty News AI™ está redactando...';
+
+  try{
+    const response=await fetch('/api/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt})
+    });
+
+    const data=await response.json();
+
+    if(!response.ok){
+      throw new Error(data.error||'No se pudo generar la publicación');
+    }
+
+    if(!data.text){
+      throw new Error('La IA no devolvió texto');
+    }
+
+    currentText=data.text;
+    els.result.textContent=currentText;
+    els.result.scrollIntoView({behavior:'smooth',block:'start'});
+    toast('Publicación generada con IA');
+
+  }catch(error){
+    console.error(error);
+    els.result.textContent=`Error: ${error.message}`;
+    toast('Error al conectar con OpenAI');
+  }finally{
+    button.disabled=false;
+    button.textContent='Generar publicación';
+  }
+}
     function generateText(){
       const topic=clean(els.topic.value), facts=els.facts.value.trim(), edition=els.edition.value, tone=els.tone.value, f=els.format.value;
       if(!topic||!facts){toast('Completa el tema y los datos principales');return}
@@ -140,7 +219,7 @@
     async function connectSupabase(test=true){const conf={url:$('#sbUrl').value.trim(),key:$('#sbKey').value.trim()};if(!conf.url||!conf.key){toast('Falta URL o clave pública');return}localStorage.setItem(configKey,JSON.stringify(conf));sb=initClient(conf);if(!test){setCloudState(false,'Configuración guardada');toast('Configuración guardada');return}try{let {data:{session}}=await sb.auth.getSession();if(!session){const {error}=await sb.auth.signInAnonymously();if(error)throw error}const {error}=await sb.from('publications').select('id').limit(1);if(error)throw error;setCloudState(true,'Supabase conectado');$('#settingsDialog').close();toast('Supabase conectado');renderHistory()}catch(e){console.error(e);setCloudState(false,'Supabase sin conectar');toast('Revisa SQL y Anonymous Sign-Ins')}}
     async function boot(){const c=config();if(c){$('#sbUrl').value=c.url||'';$('#sbKey').value=c.key||'';sb=initClient(c);if(sb){try{let {data:{session}}=await sb.auth.getSession();if(!session){const r=await sb.auth.signInAnonymously();if(r.error)throw r.error}setCloudState(true,'Supabase conectado')}catch{setCloudState(false,'Modo local')}}}renderHistory()}
 
-    $('#generate').onclick=generateText;$('#clear').onclick=()=>{els.topic.value='';els.facts.value='';currentText='';els.result.textContent='Tu publicación aparecerá aquí.';$('#topicCount').textContent='0';$('#factsCount').textContent='0'};$('#copy').onclick=()=>copyText();$('#imagePrompt').onclick=createImagePrompt;$('#save').onclick=savePublication;$('#refreshHistory').onclick=renderHistory;$('#clearLocal').onclick=()=>{if(confirm('¿Vaciar el historial local de este teléfono?')){localStorage.removeItem(storeKey);renderHistory();toast('Historial local eliminado')}};
+    $('#generate').onclick=generateWithAI;$('#clear').onclick=()=>{els.topic.value='';els.facts.value='';currentText='';els.result.textContent='Tu publicación aparecerá aquí.';$('#topicCount').textContent='0';$('#factsCount').textContent='0'};$('#copy').onclick=()=>copyText();$('#imagePrompt').onclick=createImagePrompt;$('#save').onclick=savePublication;$('#refreshHistory').onclick=renderHistory;$('#clearLocal').onclick=()=>{if(confirm('¿Vaciar el historial local de este teléfono?')){localStorage.removeItem(storeKey);renderHistory();toast('Historial local eliminado')}};
     $('#openSettings').onclick=()=>$('#settingsDialog').showModal();$('#closeSettings').onclick=()=>$('#settingsDialog').close();$('#connectSb').onclick=()=>connectSupabase(true);$('#saveSb').onclick=()=>connectSupabase(false);$('#disconnectSb').onclick=()=>{localStorage.removeItem(configKey);sb=null;$('#sbUrl').value='';$('#sbKey').value='';setCloudState(false,'Modo local');toast('Supabase desconectado');renderHistory()};
     els.topic.oninput=()=>$('#topicCount').textContent=els.topic.value.length;els.facts.oninput=()=>$('#factsCount').textContent=els.facts.value.length;
     $$('.tab').forEach(t=>t.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');historyFilter=t.dataset.filter;renderHistory()});
