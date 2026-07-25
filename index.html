@@ -114,16 +114,119 @@
   const edition=els.edition.value;
   const tone=els.tone.value;
   const format=els.format.value;
-      const formatInstructions = {
-  'facebook': 'Escribe una publicación conversacional, cercana y atractiva. Termina con una pregunta y usa hasta 5 hashtags relevantes.',
-  'linkedin': 'Escribe con tono profesional, destacando innovación, impacto y análisis. Usa hasta 4 hashtags relevantes.',
-  'x': 'Escribe un texto breve, impactante y directo. Máximo 280 caracteres y solo 2 hashtags relevantes.',
-  'telegram': 'Escribe un mensaje informativo, claro y fácil de leer. Evita relleno.',
-  'instagram-feed': 'Actúa como un creador de contenido experto en Instagram. Empieza con un gancho impactante usando uno o dos emojis. Escribe entre 2 y 4 párrafos cortos. Usa un tono cercano y natural. Genera curiosidad sin inventar datos. Termina con una pregunta para invitar a comentar. Después agrega un bloque separado con entre 5 y 8 hashtags altamente relevantes al tema. No uses hashtags genéricos ni repitas palabras del texto.',
-  'instagram-reel': 'Escribe un guion corto con un gancho fuerte, desarrollo breve y llamada a comentar.',
-  'instagram-story': 'Divide el contenido en 3 historias cortas y fáciles de leer.',
-  'instagram-carousel': 'Organiza el contenido en una portada y varias diapositivas.',
-  'tiktok': 'Escribe un guion dinámico con un gancho en los primeros segundos y una llamada a la acción.'
+  const formatInstructions = {
+  'facebook': `Escribe una publicación diseñada específicamente para Facebook.
+
+Reglas:
+- Empieza con una frase que despierte curiosidad, emoción o identificación.
+- Usa un tono cercano, natural y conversacional.
+- Explica la información en 2 a 4 párrafos cortos.
+- No inventes datos ni exageres.
+- Evita sonar como un comunicado de prensa.
+- Puedes usar entre 1 y 3 emojis cuando aporten claridad.
+- Termina con una pregunta natural que invite a comentar.
+- Agrega al final un bloque separado con entre 3 y 5 hashtags relevantes.
+- No uses hashtags de Gusty News salvo que el usuario los solicite.`,
+
+  'linkedin': `Escribe una publicación diseñada específicamente para LinkedIn.
+
+Reglas:
+- Empieza con una idea profesional que capte la atención.
+- Destaca el impacto, aprendizaje, innovación, negocio o transformación.
+- Usa un tono profesional, claro y humano.
+- Escribe entre 3 y 5 párrafos breves.
+- Aporta contexto sin inventar datos.
+- Evita frases exageradas o demasiado promocionales.
+- Termina con una pregunta que invite al análisis profesional.
+- Agrega al final un bloque separado con entre 3 y 5 hashtags relevantes.
+- No uses emojis en exceso.`,
+
+  'x': `Escribe una publicación diseñada específicamente para X.
+
+Reglas:
+- Sé breve, directo e impactante.
+- El texto completo debe tener como máximo 280 caracteres, incluyendo hashtags y firma.
+- Empieza con el dato o la idea más interesante.
+- Evita introducciones largas.
+- No repitas información.
+- Usa como máximo un emoji.
+- Termina con una pregunta solo si cabe naturalmente.
+- Agrega como máximo 2 hashtags relevantes.
+- No uses hashtags genéricos ni hashtags de Gusty News.`,
+
+  'telegram': `Escribe una publicación diseñada específicamente para Telegram.
+
+Reglas:
+- Empieza con un título corto y claro.
+- Presenta la información de forma ordenada y fácil de reenviar.
+- Usa párrafos breves.
+- Prioriza datos concretos y contexto útil.
+- Evita relleno, exageraciones y lenguaje promocional.
+- Puedes usar uno o dos emojis para organizar el contenido.
+- Termina con una pregunta breve o una conclusión útil.
+- Agrega entre 2 y 4 hashtags relevantes en un bloque separado.`,
+
+  'instagram-feed': `Escribe una publicación diseñada específicamente para Instagram Feed.
+
+Reglas:
+- Empieza con un gancho fuerte que genere curiosidad o emoción.
+- Usa uno o dos emojis al comienzo.
+- Escribe entre 2 y 4 párrafos cortos y visuales.
+- Usa un tono cercano, natural y dinámico.
+- Haz que el contenido se sienta humano, no como una nota de prensa.
+- No inventes datos ni exageres.
+- Termina con una pregunta breve que invite a comentar.
+- Después agrega un bloque separado con entre 5 y 8 hashtags altamente relevantes.
+- Evita hashtags genéricos, repetitivos o relacionados con Gusty News.`,
+
+  'instagram-reel': `Crea un guion diseñado específicamente para Instagram Reels.
+
+Estructura:
+- Gancho inicial de una sola frase.
+- Voz en off breve y dinámica.
+- Desarrollo en frases cortas.
+- Incluye una sugerencia visual entre corchetes cuando sea útil.
+- Mantén el ritmo rápido.
+- No inventes datos.
+- Termina con una llamada a comentar, compartir o guardar.
+- Agrega entre 4 y 7 hashtags relevantes en un bloque separado.`,
+
+  'instagram-story': `Crea contenido diseñado específicamente para Instagram Stories.
+
+Estructura:
+- Divide el contenido en 3 historias.
+- Escribe "Historia 1", "Historia 2" e "Historia 3".
+- Cada historia debe tener pocas palabras y ser fácil de leer.
+- La primera debe tener un gancho.
+- La segunda debe explicar el dato principal.
+- La tercera debe incluir una pregunta o llamada a responder.
+- No agregues párrafos largos.
+- No inventes datos.
+- Agrega como máximo 3 hashtags relevantes al final.`,
+
+  'instagram-carousel': `Crea contenido diseñado específicamente para un carrusel de Instagram.
+
+Estructura:
+- Portada: título corto e impactante.
+- Diapositiva 2: contexto.
+- Diapositivas siguientes: una idea clara por diapositiva.
+- Última diapositiva: conclusión y llamada a comentar o guardar.
+- Usa frases breves y fáciles de leer.
+- No inventes datos.
+- Indica claramente cada diapositiva.
+- Agrega entre 5 y 8 hashtags relevantes en un bloque separado al final.`,
+
+  'tiktok': `Crea un guion diseñado específicamente para TikTok.
+
+Estructura:
+- Gancho de máximo dos segundos.
+- Voz en off dinámica y fácil de entender.
+- Frases cortas y ritmo rápido.
+- Incluye sugerencias visuales entre corchetes.
+- Explica solo la información esencial.
+- No inventes datos.
+- Termina con una llamada a comentar, seguir o compartir.
+- Agrega entre 4 y 6 hashtags relevantes en un bloque separado.`
 };
 
 const networkStyle = formatInstructions[format] || 'Adapta el contenido al formato seleccionado.';
