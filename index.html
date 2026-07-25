@@ -114,6 +114,19 @@
   const edition=els.edition.value;
   const tone=els.tone.value;
   const format=els.format.value;
+      const formatInstructions = {
+  'facebook': 'Escribe una publicación conversacional, cercana y atractiva. Termina con una pregunta y usa hasta 5 hashtags relevantes.',
+  'linkedin': 'Escribe con tono profesional, destacando innovación, impacto y análisis. Usa hasta 4 hashtags relevantes.',
+  'x': 'Escribe un texto breve, impactante y directo. Máximo 280 caracteres y solo 2 hashtags relevantes.',
+  'telegram': 'Escribe un mensaje informativo, claro y fácil de leer. Evita relleno.',
+  'instagram-feed': 'Escribe una publicación atractiva con gancho inicial, cierre con pregunta y entre 4 y 6 hashtags relevantes.',
+  'instagram-reel': 'Escribe un guion corto con un gancho fuerte, desarrollo breve y llamada a comentar.',
+  'instagram-story': 'Divide el contenido en 3 historias cortas y fáciles de leer.',
+  'instagram-carousel': 'Organiza el contenido en una portada y varias diapositivas.',
+  'tiktok': 'Escribe un guion dinámico con un gancho en los primeros segundos y una llamada a la acción.'
+};
+
+const networkStyle = formatInstructions[format] || 'Adapta el contenido al formato seleccionado.';
   const button=$('#generate');
 
   if(!topic||!facts){
@@ -157,6 +170,8 @@ ${tone}
 
 Formato:
 ${format}
+Estilo específico para este formato:
+${networkStyle}
 `;
 
   button.disabled=true;
