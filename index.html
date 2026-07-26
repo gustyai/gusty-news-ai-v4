@@ -543,6 +543,25 @@ Gusty™ Approved™
       currentText=out;els.result.textContent=out;els.result.scrollIntoView({behavior:'smooth',block:'start'});
     }
     function createImagePrompt(){const topic=clean(els.topic.value),facts=clean(els.facts.value),edition=els.edition.value;if(!topic){toast('Primero escribe el tema');return} currentText=`PROMPT VISUAL GUSTY NEWS™\n\nCrear una portada informativa vertical 9:16 (1080x1920), estilo periódico contemporáneo premium, sobrio, elegante y disruptivo. Tema central: “${topic}”. Contexto visual: ${facts||'representar el tema con claridad'}. Edición: ${edition}. Usar composición cinematográfica, jerarquía editorial clara, alto contraste, espacio limpio, texto corto y perfectamente legible en español. Paleta azul Gusty con acentos moderados. Incluir discretamente la marca “Gusty™”. No usar logotipos de terceros, no inventar cifras, no saturar de texto.`;els.result.textContent=currentText;toast('Prompt visual creado')}
+    async function generateImage(){
+  const prompt=createImagePrompt();
+
+  const r=await fetch('/api/image',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({prompt})
+  });
+
+  const data=await r.json();
+
+  if(!r.ok){
+    toast(data.error||'Error al generar imagen');
+    return;
+  }
+
+  $('#generatedImage').src=data.image;
+  $('#imageResult').style.display='block';
+    }
     async function copyText(text=currentText){if(!text||text==='Tu publicación aparecerá aquí.'){toast('No hay texto para copiar');return}try{await navigator.clipboard.writeText(text);toast('Texto copiado')}catch{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Texto copiado')}}
     function localHistory(){try{return JSON.parse(localStorage.getItem(storeKey)||'[]')}catch{return []}}
     function setLocalHistory(v){localStorage.setItem(storeKey,JSON.stringify(v.slice(0,80)))}
@@ -558,7 +577,11 @@ Gusty™ Approved™
     async function connectSupabase(test=true){const conf={url:$('#sbUrl').value.trim(),key:$('#sbKey').value.trim()};if(!conf.url||!conf.key){toast('Falta URL o clave pública');return}localStorage.setItem(configKey,JSON.stringify(conf));sb=initClient(conf);if(!test){setCloudState(false,'Configuración guardada');toast('Configuración guardada');return}try{let {data:{session}}=await sb.auth.getSession();if(!session){const {error}=await sb.auth.signInAnonymously();if(error)throw error}const {error}=await sb.from('publications').select('id').limit(1);if(error)throw error;setCloudState(true,'Supabase conectado');$('#settingsDialog').close();toast('Supabase conectado');renderHistory()}catch(e){console.error(e);setCloudState(false,'Supabase sin conectar');toast('Revisa SQL y Anonymous Sign-Ins')}}
     async function boot(){const c=config();if(c){$('#sbUrl').value=c.url||'';$('#sbKey').value=c.key||'';sb=initClient(c);if(sb){try{let {data:{session}}=await sb.auth.getSession();if(!session){const r=await sb.auth.signInAnonymously();if(r.error)throw r.error}setCloudState(true,'Supabase conectado')}catch{setCloudState(false,'Modo local')}}}renderHistory()}
 
-    $('#generate').onclick=generateWithAI;$('#clear').onclick=()=>{els.topic.value='';els.facts.value='';currentText='';els.result.textContent='Tu publicación aparecerá aquí.';$('#topicCount').textContent='0';$('#factsCount').textContent='0'};$('#copy').onclick=()=>copyText();$('#imagePrompt').onclick=createImagePrompt;$('#save').onclick=savePublication;$('#refreshHistory').onclick=renderHistory;$('#clearLocal').onclick=()=>{if(confirm('¿Vaciar el historial local de este teléfono?')){localStorage.removeItem(storeKey);renderHistory();toast('Historial local eliminado')}};
+    $('#generate').onclick=async()=>{
+  await generateWithAI();
+  await generateImage();
+};
+                                                                                                                                                                                                                  
     $('#openSettings').onclick=()=>$('#settingsDialog').showModal();$('#closeSettings').onclick=()=>$('#settingsDialog').close();$('#connectSb').onclick=()=>connectSupabase(true);$('#saveSb').onclick=()=>connectSupabase(false);$('#disconnectSb').onclick=()=>{localStorage.removeItem(configKey);sb=null;$('#sbUrl').value='';$('#sbKey').value='';setCloudState(false,'Modo local');toast('Supabase desconectado');renderHistory()};
     els.topic.oninput=()=>$('#topicCount').textContent=els.topic.value.length;els.facts.oninput=()=>$('#factsCount').textContent=els.facts.value.length;
     $$('.tab').forEach(t=>t.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');historyFilter=t.dataset.filter;renderHistory()});
