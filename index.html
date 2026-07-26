@@ -601,6 +601,15 @@ $('#imagePrompt').onclick=generateImage;
     $$('.tab').forEach(t=>t.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');historyFilter=t.dataset.filter;renderHistory()});
     els.history.onclick=e=>{const o=e.target.dataset.open,c=e.target.dataset.copy,d=e.target.dataset.delete;if(o!==undefined){const x=window.__items[+o];currentText=x.content;els.result.textContent=x.content;els.topic.value=x.topic||'';els.facts.value=x.facts||'';els.edition.value=x.edition||els.edition.value;els.tone.value=x.tone||els.tone.value;els.format.value=x.format||els.format.value;scrollTo({top:0,behavior:'smooth'})}if(c!==undefined)copyText(window.__items[+c].content);if(d)deleteCloud(d)};
     boot();
+    $('#copy').onclick=async()=>{
+  try{
+    await navigator.clipboard.writeText(currentText);
+    toast('Texto copiado');
+  }catch(error){
+    toast('No se pudo copiar');
+  }
+};
+    
   </script>
 </body>
 </html>
