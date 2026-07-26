@@ -544,23 +544,39 @@ Gusty™ Approved™
     }
     function createImagePrompt(){const topic=clean(els.topic.value),facts=clean(els.facts.value),edition=els.edition.value;if(!topic){toast('Primero escribe el tema');return} currentText=`PROMPT VISUAL GUSTY NEWS™\n\nCrear una portada informativa vertical 9:16 (1080x1920), estilo periódico contemporáneo premium, sobrio, elegante y disruptivo. Tema central: “${topic}”. Contexto visual: ${facts||'representar el tema con claridad'}. Edición: ${edition}. Usar composición cinematográfica, jerarquía editorial clara, alto contraste, espacio limpio, texto corto y perfectamente legible en español. Paleta azul Gusty con acentos moderados. Incluir discretamente la marca “Gusty™”. No usar logotipos de terceros, no inventar cifras, no saturar de texto.`;els.result.textContent=currentText;toast('Prompt visual creado')}
     async function generateImage(){
-  const prompt=createImagePrompt();
+  const marker='🎨 PROMPT PARA IMAGEN';
 
-  const r=await fetch('/api/image',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({prompt})
-  });
-
-  const data=await r.json();
-
-  if(!r.ok){
-    toast(data.error||'Error al generar imagen');
+  if(!currentText.includes(marker)){
+    toast('No se encontró el prompt para imagen');
     return;
   }
 
-  $('#generatedImage').src=data.image;
-  $('#imageResult').style.display='block';
+  const prompt=currentText
+    .split(marker)[1]
+    .split('— Gusty™')[0]
+    .trim();
+
+  try{
+    toast('Generando imagen...');
+
+    const r=await fetch('/api/image',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt})
+    });
+
+    const data=await r.json();
+
+    if(!r.ok){
+      throw new Error(data.error||'Error al generar imagen');
+    }
+
+    $('#generatedImage').src=data.image;
+    $('#imageResult').style.display='block';
+    toast('Imagen generada');
+  }catch(error){
+    toast(error.message);
+  }
     }
     async function copyText(text=currentText){if(!text||text==='Tu publicación aparecerá aquí.'){toast('No hay texto para copiar');return}try{await navigator.clipboard.writeText(text);toast('Texto copiado')}catch{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Texto copiado')}}
     function localHistory(){try{return JSON.parse(localStorage.getItem(storeKey)||'[]')}catch{return []}}
