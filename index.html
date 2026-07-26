@@ -230,6 +230,40 @@ Estructura:
 };
 
 const networkStyle = formatInstructions[format] || 'Adapta el contenido al formato seleccionado.';
+      const topicText = `${topic} ${facts}`.toLowerCase();
+
+let category = 'General';
+let sentiment = 'Neutral';
+let hook = 'Informativo';
+      if (/(ia|inteligencia artificial|robot|robótica|robotica|tecnología|tecnologia|software|startup|openai|google|microsoft|apple)/i.test(topicText)) {
+  category = 'Tecnología';
+}
+
+if (/(salud|hospital|medicina|medicamento|doctor|paciente)/i.test(topicText)) {
+  category = 'Salud';
+}
+
+if (/(economía|economia|inflación|inflacion|empresa|mercado|bolsa|finanzas)/i.test(topicText)) {
+  category = 'Economía';
+}
+
+if (/(presidente|gobierno|congreso|elecciones|política|politica)/i.test(topicText)) {
+  category = 'Política';
+}
+
+if (/(fútbol|futbol|liga|mundial|gol|deporte|nba|tenis)/i.test(topicText)) {
+  category = 'Deportes';
+}
+
+if (/(récord|record|histórico|historico|nuevo|presenta|lanza|descubre)/i.test(topicText)) {
+  sentiment = 'Positivo';
+  hook = 'Curiosidad';
+}
+
+if (/(accidente|crisis|muere|fallece|desastre|terremoto|incendio)/i.test(topicText)) {
+  sentiment = 'Negativo';
+  hook = 'Impacto';
+}
   const button=$('#generate');
 
   if(!topic||!facts){
@@ -258,6 +292,14 @@ ${tone}
 
 Formato seleccionado:
 ${format}
+Categoría detectada:
+${category}
+
+Sentimiento detectado:
+${sentiment}
+
+Tipo de gancho recomendado:
+${hook}
 
 REGLAS DEL FORMATO
 
