@@ -235,6 +235,7 @@ const networkStyle = formatInstructions[format] || 'Adapta el contenido al forma
 let category = 'General';
 let sentiment = 'Neutral';
 let hook = 'Informativo';
+let imageStyle = 'Editorial fotorealista';
       if (/(ia|inteligencia artificial|robot|robótica|robotica|tecnología|tecnologia|software|startup|openai|google|microsoft|apple)/i.test(topicText)) {
   category = 'Tecnología';
 }
@@ -262,6 +263,25 @@ if (/(récord|record|histórico|historico|nuevo|presenta|lanza|descubre)/i.test(
 
 if (/(accidente|crisis|muere|fallece|desastre|terremoto|incendio)/i.test(topicText)) {
   sentiment = 'Negativo';
+  if(category==='Tecnología'){
+  imageStyle='Tecnología futurista, iluminación azul, estilo editorial hiperrealista';
+}
+
+if(category==='Salud'){
+  imageStyle='Ambiente médico moderno, iluminación natural, estilo editorial';
+}
+
+if(category==='Economía'){
+  imageStyle='Oficina moderna, gráficos financieros, estilo corporativo';
+}
+
+if(category==='Política'){
+  imageStyle='Edificio gubernamental, estilo documental';
+}
+
+if(category==='Deportes'){
+  imageStyle='Acción deportiva, alta velocidad, estilo fotográfico';
+}
   hook = 'Impacto';
 }
   const button=$('#generate');
@@ -300,6 +320,8 @@ ${sentiment}
 
 Tipo de gancho recomendado:
 ${hook}
+Estilo recomendado para la imagen:
+${imageStyle}
 
 REGLAS DEL FORMATO
 
@@ -430,6 +452,24 @@ No expliques la revisión.
 
 Simplemente devuelve la versión mejorada.
 
+PROMPT PARA IMAGEN
+
+Después de redactar la publicación, crea un prompt profesional para generar una imagen con IA.
+
+Debe:
+
+- ser hiperrealista
+- sin texto
+- sin logotipos
+- iluminación cinematográfica
+- calidad editorial
+- formato adecuado para la red social elegida
+- usar el estilo recomendado para la imagen
+- estar basado únicamente en la información proporcionada
+
+Coloca el resultado bajo el título:
+
+🎨 PROMPT PARA IMAGEN
 ENTREGA
 
 Devuelve únicamente la publicación final.
