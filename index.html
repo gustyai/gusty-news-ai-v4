@@ -495,7 +495,7 @@ Gusty™ Approved™
     const response=await fetch('/api/generate',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({prompt})
+      body: JSON.stringify({prompt: 'Prueba'})
     });
 
     const data=await response.json();
