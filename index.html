@@ -593,10 +593,8 @@ Gusty™ Approved™
     async function connectSupabase(test=true){const conf={url:$('#sbUrl').value.trim(),key:$('#sbKey').value.trim()};if(!conf.url||!conf.key){toast('Falta URL o clave pública');return}localStorage.setItem(configKey,JSON.stringify(conf));sb=initClient(conf);if(!test){setCloudState(false,'Configuración guardada');toast('Configuración guardada');return}try{let {data:{session}}=await sb.auth.getSession();if(!session){const {error}=await sb.auth.signInAnonymously();if(error)throw error}const {error}=await sb.from('publications').select('id').limit(1);if(error)throw error;setCloudState(true,'Supabase conectado');$('#settingsDialog').close();toast('Supabase conectado');renderHistory()}catch(e){console.error(e);setCloudState(false,'Supabase sin conectar');toast('Revisa SQL y Anonymous Sign-Ins')}}
     async function boot(){const c=config();if(c){$('#sbUrl').value=c.url||'';$('#sbKey').value=c.key||'';sb=initClient(c);if(sb){try{let {data:{session}}=await sb.auth.getSession();if(!session){const r=await sb.auth.signInAnonymously();if(r.error)throw r.error}setCloudState(true,'Supabase conectado')}catch{setCloudState(false,'Modo local')}}}renderHistory()}
 
-    $('#generate').onclick=async()=>{
-  await generateWithAI();
-  await generateImage();
-};
+    $('#generate').onclick=generateWithAI;
+$('#imagePrompt').onclick=generateImage;
                                                                                                                                                                                                                   
     $('#openSettings').onclick=()=>$('#settingsDialog').showModal();$('#closeSettings').onclick=()=>$('#settingsDialog').close();$('#connectSb').onclick=()=>connectSupabase(true);$('#saveSb').onclick=()=>connectSupabase(false);$('#disconnectSb').onclick=()=>{localStorage.removeItem(configKey);sb=null;$('#sbUrl').value='';$('#sbKey').value='';setCloudState(false,'Modo local');toast('Supabase desconectado');renderHistory()};
     els.topic.oninput=()=>$('#topicCount').textContent=els.topic.value.length;els.facts.oninput=()=>$('#factsCount').textContent=els.facts.value.length;
